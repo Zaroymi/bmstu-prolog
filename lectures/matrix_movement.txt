@@ -1,0 +1,77 @@
+% Constraint Logic Programming
+:- use_module(library(dif)).	% Sound inequality
+:- use_module(library(clpfd)).	% Finite domain constraints
+:- use_module(library(clpb)).	% Boolean constraints
+:- use_module(library(chr)).	% Constraint Handling Rules
+:- use_module(library(when)).	% Coroutining
+%:- use_module(library(clpq)).  % Constraints over rational numbers
+
+% Your program goes here
+
+
+/** <examples> Your example queries go here, e.g.
+?- X #> 1.
+*/
+
+ячейка(0,0,свободна).
+ячейка(1,0,свободна).
+ячейка(2,0,занято).
+ячейка(3,0,свободна).
+
+ячейка(0,1,занято).
+ячейка(1,1,свободна).
+ячейка(2,1,свободна).
+ячейка(3,1,свободна).
+
+ячейка(0,2,свободна).
+ячейка(1,2,занято).
+ячейка(2,2,свободна).
+ячейка(3,2,занято).
+
+ячейка(0,3,свободна).
+ячейка(1,3,свободна).
+ячейка(2,3,свободна).
+ячейка(3,3,свободна).
+
+идти(вправо, X, Y, X2, Y2):- X2#= X+1, Y2 #= Y, ячейка(X2, Y2, свободна).
+идти(вверх, X, Y, X2, Y2):- X2#= X, Y2 #= Y-1, ячейка(X2, Y2, свободна).
+идти(влево, X, Y, X2, Y2):- X2#= X-1, Y2 #= Y, ячейка(X2, Y2, свободна).
+идти(вниз, X, Y, X2, Y2):- X2#= X, Y2 #= Y+1, ячейка(X2, Y2, свободна).
+
+член(_, []):-!,false.
+член(El, [El|_]):-!,true.
+член(El, [_|L]):-!,член(El, L).
+
+тыЗнаешьПуть(_, Конечная, _, _):-
+    Конечная=(X,Y),
+    not(ячейка(X,Y, свободна)),!,fail.
+тыЗнаешьПуть(X, X, Путь, Путь).
+тыЗнаешьПуть(Откуда, Куда, Путь, Ответ):-
+    Откуда=(Xстарт, Yстарт),
+    идти(_, Xстарт, Yстарт, X2, Y2),
+    not(член((X2, Y2), Путь)),
+    тыЗнаешьПуть((X2, Y2), Куда, [(X2, Y2) | Путь], Ответ).
+
+term(false).
+term(true).
+
+and(true, true, true).
+and(false, true, false).
+and(true, false, false).
+and(false, false, false).
+
+
+or(true, true, true).
+or(false, true, true).
+or(true, false, true).
+or(false, false, false).
+
+f(A,B, Res2):-
+    term(A), %write(A), write(' '),
+    term(B), %write(B), write(' '),
+    or(A, B, Res1), and(A, Res1, Res2),
+    write((A, B, Res2)), nl.
+
+
+
+
