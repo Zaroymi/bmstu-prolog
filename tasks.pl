@@ -58,9 +58,8 @@ count_elem_seq([H|L], H, CountAcc, ListAcc, Res) :-
     count_elem_seq(L, H, Acc, ListAcc, Res), !.
 
 count_elem_seq([H1|L], H2, CountAcc, ListAcc,Res) :- 
-    not(H1 = H2),
     append(ListAcc, [ [H2 | [CountAcc]] ], List), 
-    count_elem_seq([H1|L], H1, 0, List, Res), !.
+    count_elem_seq(L, H1, 1, List, Res), !.
 
 encode_modified([], Res) :- Res = [], !.
 encode_modified([H | L], Res) :-
